@@ -3,6 +3,7 @@ package org.devocative.examples;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.devocative.examples.resources.HelloRestController;
 
 public class DropWizardApplication extends Application<DropWizardConfiguration> {
 
@@ -23,7 +24,7 @@ public class DropWizardApplication extends Application<DropWizardConfiguration> 
 	@Override
 	public void run(final DropWizardConfiguration configuration,
 					final Environment environment) {
-		// TODO: implement application
+		environment.jersey().register(new HelloRestController());
 	}
 
 }
