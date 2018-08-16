@@ -1,19 +1,24 @@
 package org.devocative.examples.springboot.controller;
 
+import org.devocative.examples.springboot.common.IHelloService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 
 @RestController
 @RequestMapping("/api")
 @ConfigurationProperties(prefix = "backend")
 public class HelloRestController {
+
+	@Autowired
+	private IHelloService helloService;
+
 	private RestTemplate template = new RestTemplate();
 
 	/*
@@ -47,25 +52,18 @@ public class HelloRestController {
 
 	// ---------------
 
-	@RequestMapping(value = "/info", produces = "text/plain")
-	public String info() {
-		String hostname;
-		try {
-			hostname = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			hostname = "unknown";
-		}
-
-		return String.format("%s Spring Boot @ %s", message, hostname);
+	@RequestMapping(value = {"/info", "/info/{name}"}, produces = "text/plain")
+	public String info(@PathVariable(value = "name", required = false) String name) {
+		return helloService.getMessage(name != null ? name : message);
 	}
 
-	@RequestMapping(value = "/call", produces = "text/plain")
-	public String call() {
+	@RequestMapping(value = "/call/{person}", produces = "text/plain")
+	public String call(@PathVariable("person") String person) {
 		try {
 			BackendVO vo = template.getForObject(
-				String.format("%s/%s?greeting={greeting}", address, entry),
-				BackendVO.class,
-				message);
+					String.format("%s/%s?greeting={p}", address, entry),
+					BackendVO.class,
+					person);
 			return vo.toString();
 		} catch (RestClientException e) {
 			return "ERROR: " + e.getMessage();
