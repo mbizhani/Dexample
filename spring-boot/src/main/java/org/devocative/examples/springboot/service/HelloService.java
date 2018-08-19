@@ -1,6 +1,6 @@
 package org.devocative.examples.springboot.service;
 
-import org.devocative.examples.springboot.common.IHelloService;
+import org.devocative.examples.springboot.iservice.IHelloService;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;

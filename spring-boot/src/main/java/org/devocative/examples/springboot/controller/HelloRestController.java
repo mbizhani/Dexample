@@ -1,6 +1,8 @@
 package org.devocative.examples.springboot.controller;
 
-import org.devocative.examples.springboot.common.IHelloService;
+import org.devocative.examples.springboot.entity.Customer;
+import org.devocative.examples.springboot.iservice.ICustomerRepository;
+import org.devocative.examples.springboot.iservice.IHelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -18,6 +22,9 @@ public class HelloRestController {
 
 	@Autowired
 	private IHelloService helloService;
+
+	@Autowired
+	private ICustomerRepository customerRepository;
 
 	private RestTemplate template = new RestTemplate();
 
@@ -52,7 +59,7 @@ public class HelloRestController {
 
 	// ---------------
 
-	@RequestMapping(value = {"/info", "/info/{name}"}, produces = "text/plain")
+	@RequestMapping(value = {"/info", "/info/{name}"})
 	public String info(@PathVariable(value = "name", required = false) String name) {
 		return helloService.getMessage(name != null ? name : message);
 	}
@@ -61,13 +68,25 @@ public class HelloRestController {
 	public String call(@PathVariable("person") String person) {
 		try {
 			BackendVO vo = template.getForObject(
-					String.format("%s/%s?greeting={p}", address, entry),
-					BackendVO.class,
-					person);
+				String.format("%s/%s?greeting={p}", address, entry),
+				BackendVO.class,
+				person);
 			return vo.toString();
 		} catch (RestClientException e) {
 			return "ERROR: " + e.getMessage();
 		}
+	}
+
+	@RequestMapping(value = "/customer/all")
+	public List<Customer> list() {
+		List<Customer> result = new ArrayList<>();
+		customerRepository.findAll().forEach(result::add);
+		return result;
+	}
+
+	@RequestMapping(value = "/customer/byName/{name}")
+	public List<Customer> find(@PathVariable("name") String name) {
+		return customerRepository.findByNameContainingIgnoreCase(name);
 	}
 
 	// ------------------------------
