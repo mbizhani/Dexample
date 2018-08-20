@@ -1,0 +1,21 @@
+<p>
+  Search Panel
+</p>
+
+<div>
+  <!--<div *ngIf="search.invalid && (search.dirty || search.touched)" class="alert alert-danger">
+    <div *ngIf="search.errors.required">
+      Search is required.
+    </div>
+  </div>-->
+
+  <label>
+    <input [(ngModel)]="search" required placeholder="Search">
+  </label>
+
+  <button (click)="fetchSearchResult()">Get!</button>
+</div>
+
+<ul *ngIf="searchResult">
+  <li *ngFor="let result of searchResult">{{ result['name'] }}</li>
+</ul>
