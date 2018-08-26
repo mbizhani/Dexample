@@ -5,6 +5,8 @@ import org.devocative.examples.springboot.iservice.ICustomerRepository;
 import org.devocative.examples.springboot.iservice.IHelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -26,6 +28,9 @@ public class HelloRestController {
 	private ICustomerRepository customerRepository;
 
 	private RestTemplate template = new RestTemplate();
+
+	@Autowired
+	private DiscoveryClient client;
 
 	/*
 	Map 'backend.message' from 'application.properties' to following field
@@ -91,6 +96,31 @@ public class HelloRestController {
 	@GetMapping(value = "/customer/byName/{name}")
 	public List<Customer> find(@PathVariable("name") String name) {
 		return customerRepository.findByNameContainingIgnoreCase(name);
+	}
+
+	@GetMapping(value = "/customer/{customerId}/{name}")
+	public int getTotalPortfolioByName(@PathVariable("customerId") Integer customerId, @PathVariable("name") String name) {
+		List<ServiceInstance> instances = client.getInstances("springboot-service");
+		ServiceInstance instance = instances
+			.stream()
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("Not Found"));
+
+		String url = String.format("%s/portfolios/customer/%d", instance.getUri(), customerId);
+
+		int result = 0;
+		Object[][][] portfolios = template.getForObject(url, Object[][][].class);
+		if (portfolios != null) {
+			for (Object[][] portfolioGroup : portfolios) {
+				for (Object[] portfolio : portfolioGroup) {
+					if (portfolio[0].equals(name)) {
+						result += (Integer) portfolio[1];
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	// ------------------------------
