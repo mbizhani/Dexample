@@ -5,10 +5,7 @@ import org.devocative.examples.springboot.iservice.ICustomerRepository;
 import org.devocative.examples.springboot.iservice.IHelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -61,12 +58,17 @@ public class HelloRestController {
 
 	// ---------------
 
-	@RequestMapping(value = {"/info", "/info/{name}"})
+	/*
+	The @GetMapping annotation makes the method accessible only through GET method.
+	However for @RequestMapping, the method is accessible through all HTTP methods,
+	unless the methods field is specified explicitly.
+	 */
+	@GetMapping(value = {"/info", "/info/{name}"})
 	public String info(@PathVariable(value = "name", required = false) String name) {
 		return helloService.getMessage(name != null ? name : message);
 	}
 
-	@RequestMapping(value = "/call/{person}", produces = "text/plain")
+	@GetMapping(value = "/call/{person}", produces = "text/plain")
 	public String call(@PathVariable("person") String person) {
 		try {
 			BackendVO vo = template.getForObject(
@@ -79,14 +81,14 @@ public class HelloRestController {
 		}
 	}
 
-	@RequestMapping(value = "/customer/all")
+	@GetMapping(value = "/customer/all")
 	public List<Customer> list() {
 		List<Customer> result = new ArrayList<>();
 		customerRepository.findAll().forEach(result::add);
 		return result;
 	}
 
-	@RequestMapping(value = "/customer/byName/{name}")
+	@GetMapping(value = "/customer/byName/{name}")
 	public List<Customer> find(@PathVariable("name") String name) {
 		return customerRepository.findByNameContainingIgnoreCase(name);
 	}
