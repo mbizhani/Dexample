@@ -2,7 +2,8 @@ FROM debian:stable-slim
 
 EXPOSE 8888
 
-RUN apt-get update && apt-get install --no-install-recommends -y openvpn tinyproxy
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y openvpn tinyproxy
 
 COPY config /
 
