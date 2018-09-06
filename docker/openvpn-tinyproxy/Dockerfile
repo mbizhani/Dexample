@@ -2,10 +2,13 @@ FROM debian:stable-slim
 
 EXPOSE 8888
 
-RUN apt-get update && apt-get install -y openvpn tinyproxy
+RUN apt-get update && apt-get install --no-install-recommends -y openvpn tinyproxy
 
 COPY config /
 
-ENV VPN_PASSWD=**None**
+RUN chmod +x /opt/vpnbook/run.sh
+
+ENV VPN_PASSWD=**none** \
+    VPN_BOOK=vpnbook-ca1-tcp443.ovpn
 
 CMD ["/opt/vpnbook/run.sh"]
