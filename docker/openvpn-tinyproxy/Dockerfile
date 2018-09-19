@@ -12,4 +12,6 @@ RUN chmod +x /opt/vpnbook/run.sh
 ENV VPN_PASSWD=**none** \
     VPN_BOOK=vpnbook-ca1-tcp443.ovpn
 
+VOLUME /opt/vpnbook/books
+
 CMD ["/opt/vpnbook/run.sh"]
