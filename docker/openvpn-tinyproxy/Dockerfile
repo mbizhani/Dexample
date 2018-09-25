@@ -7,11 +7,11 @@ RUN apt-get update && \
 
 COPY config /
 
-RUN chmod +x /opt/vpnbook/run.sh
+RUN chmod +x /opt/vpn/run.sh
 
-ENV VPN_PASSWD=**none** \
-    VPN_BOOK=vpnbook-ca1-tcp443.ovpn
+ENV OVPN_RLM=q \
+    OVPN_CFG=q
 
-VOLUME /opt/vpnbook/books
+VOLUME /opt/vpn/cfg
 
-CMD ["/opt/vpnbook/run.sh"]
+CMD ["/opt/vpn/run.sh"]
