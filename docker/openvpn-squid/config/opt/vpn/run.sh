@@ -2,7 +2,7 @@
 
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
-/usr/sbin/tinyproxy -c /etc/tinyproxy/tinyproxy.conf
+/usr/sbin/squid
 
 #echo -e "vpnbook\n${VPN_PASSWD}" > /opt/vpnbook/realm.txt
 
