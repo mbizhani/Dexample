@@ -3,6 +3,10 @@ import Header from "./Header";
 import RecipeList from "./RecipeList";
 import RecipeDetail from "./RecipeDetail";
 
+fetch(`${API_URL}/v1/recipes`)
+	.then(resp => resp.json())
+	.then(json => console.log(json));
+
 const App = () => (
 	<div>
 		<Header/>
